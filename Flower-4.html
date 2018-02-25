@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta name="description" content="[add your bin description]">
+  <meta charset="utf-8">
+<title>Flower</title>
+<canvas id = "myCanvas" height = "400" width = "400" style="border:1px solid #000;"></canvas>
+<br/>
+	<h1>Please move the flower!</h1>
+<input id = "slider1" type = "range" min = "0" max = "2000" />
+<br/>
+<p>When would you like the butterfly to fly away?</p>
+<input id = "slider2" type = "range" min = "200" max = "500" />
+<br/>
+<p>Viewing angle</p>
+<input id = "slider3" type = "range" min = "-100" max = "2000" />
+<p>Zooming</p>
+<input id = "slider4" type = "range" min = "20" max = "180" />
+<script src="http://graphics.cs.wisc.edu/JS/twgl-full.min.js"></script>
+</head>
+
+<body>
+<script>
+function setup() { "use strict";
+	var canvas = document.getElementById('myCanvas');	
+	var context = canvas.getContext('2d');
+	var m4 = twgl.m4;
+	
+	var slider1 = document.getElementById('slider1');
+	slider1.value = 0;
+	var slider2 = document.getElementById('slider2');
+	slider2.value = 350;
+	var slider3 = document.getElementById('slider3');
+	slider3.value = 1000;
+	var slider4 = document.getElementById('slider4');
+	slider4.value = 100;
+
+  function moveToTx(x,y,z,Tx) {
+    var loc = [x,y,z];
+    var locTx = m4.transformPoint(Tx,loc);
+    context.moveTo(locTx[0],locTx[1]);
+  }
+
+  function lineToTx(x,y,z,Tx) {
+    var loc = [x,y,z];
+    var locTx = m4.transformPoint(Tx,loc);
+    context.lineTo(locTx[0],locTx[1]);
+  }
+                
+  function drawAxes(Tx,color) {
+    context.beginPath(); context.strokeStyle = color;
+    moveToTx(0,0,0,Tx);lineToTx(100,0,0,Tx);context.stroke();
+    moveToTx(0,0,0,Tx);lineToTx(0,150,0,Tx);context.stroke();
+    moveToTx(0,0,0,Tx);lineToTx(0,0,200,Tx);context.stroke();
+  }
+
+	function butterfly(Tx,height){
+		context.beginPath(); context.fillStyle = 'yellow';  
+		moveToTx(0,0,0,Tx); lineToTx(-height/2,height,20,Tx);lineToTx(height/2,height,20,Tx);
+		context.closePath();context.fill();
+		context.beginPath();
+
+		moveToTx(0,0,0,Tx); lineToTx(-height/2,height,0,Tx);lineToTx(height/2,height,0,Tx);
+		context.closePath();context.fill();
+		context.beginPath();
+
+		moveToTx(-height/2,height,20,Tx); lineToTx(-height/2,height,0,Tx);lineToTx(height/2,height,0,Tx);lineToTx(height/2,height,20,Tx);
+		context.closePath();context.fill();
+		context.beginPath();
+
+		moveToTx(0,0,0,Tx); lineToTx(-height/2,height,20,Tx);lineToTx(-height/2,height,0,Tx);
+		context.closePath();context.fill();
+		context.beginPath();
+
+		moveToTx(0,0,0,Tx); lineToTx(height/2,height,20,Tx);lineToTx(height/2,height,0,Tx);
+		context.closePath();context.fill();
+		context.beginPath();
+
+		moveToTx(0,0,0,Tx); lineToTx(-height/2,-height,20,Tx);lineToTx(height/2,-height,20,Tx);
+		context.closePath();context.fill();
+		context.beginPath();
+
+		moveToTx(0,0,0,Tx); lineToTx(-height/2,-height,0,Tx);lineToTx(height/2,-height,0,Tx);
+		context.closePath();context.fill();
+		context.beginPath();
+
+		moveToTx(-height/2,-height,20,Tx); lineToTx(-height/2,-height,0,Tx);lineToTx(height/2,-height,0,Tx);lineToTx(height/2,-height,20,Tx);
+		context.closePath();context.fill();
+		context.beginPath();
+
+		moveToTx(0,0,0,Tx); lineToTx(-height/2,-height,20,Tx);lineToTx(-height/2,-height,0,Tx);
+		context.closePath();context.fill();
+		context.beginPath();
+		moveToTx(0,0,0,Tx); lineToTx(height/2,-height,20,Tx);lineToTx(height/2,-height,0,Tx);
+		context.closePath();context.fill();
+ }
+	function flowerPetal(Tx,height,color1,color2) {
+		context.beginPath(); 
+		context.fillStyle = color1; 
+		moveToTx(0,0,0,Tx); lineToTx(-height/4,height,20,Tx);lineToTx(height/4,height,20,Tx);
+		context.closePath();context.fill();
+		context.beginPath(); 
+		context.fillStyle = color1; 
+		moveToTx(0,0,0,Tx); lineToTx(-height/4,height,0,Tx);lineToTx(height/4,height,0,Tx);
+		context.closePath();context.fill();
+		context.beginPath(); 
+		context.fillStyle = color2; 
+		moveToTx(-height/4,height,20,Tx); lineToTx(-height/4,height,0,Tx);lineToTx(height/4,height,0,Tx);lineToTx(height/4,height,20,Tx);
+		context.closePath();context.fill();
+		context.beginPath(); 
+		context.fillStyle = color2; 
+		moveToTx(0,0,0,Tx); lineToTx(-height/4,height,20,Tx);lineToTx(-height/4,height,0,Tx);
+		context.closePath();context.fill();
+		context.beginPath(); 
+		context.fillStyle = color2; 
+		moveToTx(0,0,0,Tx); lineToTx(height/4,height,20,Tx);lineToTx(height/4,height,0,Tx);
+		context.closePath();context.fill();
+ }
+	function stem(Tx,s) {
+	 context.beginPath(); context.strokeStyle = 'green'; 
+	 moveToTx(0,0,-100,Tx); lineToTx(flowerTrajectory(s)[0],flowerTrajectory(s)[1],flowerTrajectory(s)[2],Tx);context.stroke(); 
+ }
+ 
+	function flowerTrajectory(x) {
+		var result = [10*Math.cos(0.01*x*Math.PI/2),100*Math.sin(0.01*x*Math.PI/2),200];
+		return result;
+	} 
+ 	function beeFlyAway(x) {
+ 		var result = [x*Math.cos(0.1*x*Math.PI/2),x*Math.sin(0.1*x*Math.PI/2),x];
+		return result;
+ 	}
+	function trajectory(x) {
+ 		var result = [5*Math.cos(0.2*x*Math.PI/2),10*Math.sin(0.2*x*Math.PI/2),50];
+		return result;
+	}
+ 
+ function draw(){
+ 	
+	canvas.width = canvas.width;
+ 	context.fillStyle = "skyblue";
+        context.fillRect(0,0,400,400);
+	
+ 	var size = 150;
+	var t = slider1.value*0.5;
+	var whenToSplit = slider2.value;
+        
+	
+	var Tbox1 = m4.translation(flowerTrajectory(t));
+	var Tbox2;
+	if(t > whenToSplit){
+ 		// how to make this to look at trajectory? 
+		Tbox2 = m4.multiply(m4.multiply(m4.translation([50,0,50]),
+					m4.translation(beeFlyAway(t-whenToSplit))),	
+				m4.translation(flowerTrajectory(whenToSplit)));
+	} else	{	
+		var Tbox2toTbox1 = m4.translation(trajectory(t));
+		Tbox2 = m4.multiply(Tbox2toTbox1,Tbox1);
+	}
+	var eyeview = slider3.value*0.5;
+	var eye = [400*Math.cos(50*0.01*Math.PI/2),400*Math.sin(50*0.01*Math.PI/2),eyeview];
+ 	var target = [0,0,0];
+  	var up = [0,0,1];
+    	
+	var Tcamera = m4.inverse(m4.lookAt(eye,target,up));
+	var zoom = (200-slider4.value)*0.01*Math.PI/2;
+ 	var Tprojection = m4.perspective(zoom,1.0,1,20);
+	var Tviewport = m4.multiply(m4.scaling([200,-200,100]),m4.translation([200,350,0]));
+    
+	var Tcpv = m4.multiply(m4.multiply(Tcamera,Tprojection),Tviewport);
+	var Tmcpv1 = m4.multiply(Tbox1,Tcpv);
+	var Tmcpv2 = m4.multiply(Tbox2,Tcpv);
+		
+	//drawAxes(Tcpv,'black');
+	//drawAxes(Tmcpv1,'green');
+
+	stem(Tcpv,t);
+	for(var i = 0; i <8 ; i++){
+		flowerPetal(m4.multiply(m4.rotationX(Math.PI/14),m4.multiply(m4.rotationZ(i*Math.PI/4),Tmcpv1)),size,'red','orange');
+	}
+	//drawAxes(Tmcpv2,'yellow');
+	butterfly(m4.multiply(m4.rotationX(t),Tmcpv2),100);
+	butterfly(m4.multiply(m4.translation([t,0,t]),m4.multiply(m4.rotationX(0.1*t),Tmcpv2)),70);
+	}	
+
+	slider1.addEventListener("input",draw);
+	slider2.addEventListener("input",draw);
+	slider3.addEventListener("input",draw);
+	slider4.addEventListener("input",draw);
+	draw();
+}
+window.onload = setup;
+</script>
+</body>
+</html>
