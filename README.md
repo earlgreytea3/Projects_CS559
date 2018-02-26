@@ -1,4 +1,4 @@
-## Projects_CS559
+## Computer Graphics Projects
 
 **Project3. 3D Flower**<br/>
 
