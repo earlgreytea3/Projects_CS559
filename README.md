@@ -2,4 +2,4 @@
 Program Assignments
 
 3. Using twgl library to create animated 3D objects & Graphics Pipeline experiments with viewing angle and zooming
-![](C:\Users\JAEUN\Desktop\3DFlower.gif)
+![](3DFlower.gif)
