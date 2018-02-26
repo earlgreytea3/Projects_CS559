@@ -3,4 +3,4 @@ Program Assignments
 
 Project3. 3DFlower
 Using twgl library to create animated 3D objects & Graphics Pipeline experiments with viewing angle and zooming
-![](3DFlower.gif|200x200)
+![](3DFlower.gif=200x200)
