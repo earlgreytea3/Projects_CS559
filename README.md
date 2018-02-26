@@ -1,6 +1,6 @@
-## Projects_CS559_Program Assignments
+## Projects_CS559
 
-**Project3. 3DFlower**<br/>
+**Project3. 3D Flower**<br/>
 
 Using twgl library to create animated 3D objects & Graphics Pipeline experiments with viewing angle and zooming<br/>
 <br/>
