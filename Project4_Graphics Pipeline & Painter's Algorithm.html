@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<br>
+    <meta charset="UTF-8">
+    <title>Graphics Pipeline & Painter's Algorithm</title>
+    <canvas id ="myCanvas" height = "400" width = "600" style="border: black 1px solid;"></canvas>
+    </br>
+    <input id ="slider1" type="range" min ="-2*Math.PI" max="2*Math.PI"/>
+    view angle
+    </br>
+    <input id ="slider3" type="range" min ="-400" max="400"/>
+    view angle - up and down
+    </br>
+    <input id ="slider4" type="range" min ="-200" max="50"/>
+    Move Light Source
+    </br>
+    <input id ="slider2" type="range" min ="0" max="15"/>
+    Object Rotation Speed
+    <script src="http://graphics.cs.wisc.edu/JS/twgl-full.min.js"></script>
+    </br>
+    <input id ="slider5" type="range" min ="-100" max="100"/>
+    perspective projection
+</head>
+
+<body>
+
+<script>
+
+    function setup(){ "use strict";
+        var canvas = document.getElementById('myCanvas');
+        var context = canvas.getContext('2d');
+        var m4 = twgl.m4;
+        var slider1 = document.getElementById('slider1');
+        slider1.value = Math.PI;
+        var slider2 = document.getElementById('slider2');
+        slider2.value = 5;
+        var slider3 = document.getElementById('slider3');
+        slider3.value = 150;
+        var rotation = 0;
+        var slider4 = document.getElementById('slider4');
+        slider4.value = 0;
+        var slider5 = document.getElementById('slider5');
+        slider5.value = 0;
+
+        //array to store boxes
+        var boxes = [];
+        // box : (xCoord, yCoord, zCoord, color)
+        boxes.push([50,50,100,"black"]);
+        boxes.push([60,60,60,"blue"]);
+        boxes.push([70,50,80,"red"]);
+        boxes.push([30,30,30,"purple"]);
+        var centerOfBoxWorld = [];
+
+        //array to store triangles and model transforms according to triangles array
+        var triangles = [];
+
+        function initGeometry(){ //12 triangle patches for each box, not sorted for visibility yet.
+            for (var i = 0; i < boxes.length; i++) {
+                var box = boxes[i];
+                // triangle : ([0]vertex1, [1]vertex2, [2]vertex3, [3]color, [4]colorCode, [5]model#, [6]Tmodel)
+                triangles.push([[box[0], 0, 0], [box[0], box[1], 0], [box[0], box[1], box[2]], "red", 1, i, m4.identity()]);
+                triangles.push([[box[0], 0, 0], [box[0], box[1], box[2]], [box[0], 0, box[2]], "red", 2, i, m4.identity()]);
+                triangles.push([[0, 0, box[2]], [0, box[1], box[2]], [0, box[1], 0], "red",1, i, m4.identity()]);
+                triangles.push([[0, 0, box[2]], [0, box[1], 0], [0, 0, 0], "red", 2, i, m4.identity()]);
+
+                triangles.push([[box[0], box[1], box[2]], [0, box[1], 0], [0, box[1], box[2]], "red", 3, i, m4.identity()]);
+                triangles.push([[box[0], box[1], 0], [0, box[1], 0], [box[0], box[1], box[2]], "red", 4, i, m4.identity()]);
+                triangles.push([[box[0], 0, 0], [0, 0, box[2]], [box[0], 0, box[2]], "red", 3, i, m4.identity()]);
+                triangles.push([[box[0], 0, 0], [0, 0, 0], [0, 0, box[2]], "red", 4, i, m4.identity()]);
+
+                triangles.push([[box[0], 0, box[2]], [0, 0, box[2]], [box[0], box[1], box[2]], "red", 5, i, m4.identity()]);
+                triangles.push([[0, box[1], box[2]], [0, 0, box[2]], [box[0], box[1], box[2]], "red", 6, i, m4.identity()]);
+                triangles.push([[box[0], box[1], 0], [box[0], 0, 0], [0, box[1], 0], "red", 5, i, m4.identity()]);
+                triangles.push([[0, 0, 0], [box[0], 0, 0], [0, box[1], 0], "red", 6, i, m4.identity()]);
+            }
+        }
+
+        function moveToTx(x,y,z,Tx){
+            var loc = [x,y,z];
+            var locTx = m4.transformPoint(Tx,loc);
+            context.moveTo(locTx[0],locTx[1]);
+        }
+        function lineToTx(x,y,z,Tx){
+            var loc = [x,y,z];
+            var locTx = m4.transformPoint(Tx,loc);
+            context.lineTo(locTx[0],locTx[1]);
+        }
+        function drawAxes(Tx,color){
+            context.beginPath(); context.strokeStyle = color;
+            moveToTx(0,0,0,Tx); lineToTx(50,0,0,Tx); context.stroke();
+            moveToTx(0,0,0,Tx); lineToTx(0,100,0,Tx); context.stroke();
+            moveToTx(0,0,0,Tx); lineToTx(0,0,150,Tx); context.stroke();
+        }
+
+        function drawBox(box,Tx){ // box : a,b,c,color
+            //draw twelve edges of rectangle with given setting
+            context.beginPath(); context.strokeStyle = box[3];
+            moveToTx(0,0,0,Tx); lineToTx(box[0],0,0,Tx); lineToTx(box[0],box[1],0,Tx); lineToTx(0,box[1],0,Tx); context.stroke();
+            moveToTx(box[0],0,0,Tx); lineToTx(box[0],0,box[2],Tx); lineToTx(box[0],box[1],box[2],Tx); lineToTx(box[0],box[1],0,Tx); context.stroke();
+            moveToTx(box[0],0,box[2],Tx); lineToTx(0,0,box[2],Tx); lineToTx(0,box[1],box[2],Tx); lineToTx(box[0],box[1],box[2],Tx); context.stroke();
+            moveToTx(0,0,box[2],Tx); lineToTx(0,0,0,Tx); lineToTx(0,box[1],0,Tx); lineToTx(0,box[1],box[2],Tx); context.stroke();
+        }
+
+        function findCenterOfBox(box,Tmodel) {
+            var centerModel = [box[0]/2, box[1]/2, box[2]/2];
+            return m4.transformPoint(Tmodel,centerModel);
+        }
+
+        function drawTriangle(triangle,Tx){ // triangle : vertex1,vertex2,vertex3,color
+            context.beginPath(); context.fillStyle = triangle[3];
+            moveToTx(triangle[0][0],triangle[0][1],triangle[0][2],Tx);
+            lineToTx(triangle[1][0],triangle[1][1],triangle[1][2],Tx);
+            lineToTx(triangle[2][0],triangle[2][1],triangle[2][2],Tx);
+            context.closePath(); context.fill();
+        }
+
+        function  vecLength(vector) { // compute length of 3D vector
+            return Math.sqrt(Math.pow(vector[0],2) + Math.pow(vector[1],2) + Math.pow(vector[2],2));
+        }
+
+        function vectorFromPoints(point1, point2){ // arg : starting pt, ending pt
+           return [point2[0]-point1[0], point2[1]-point1[1], point2[2]-point1[2]];
+        }
+
+        function getUnitVector(vector){
+            var magnitude = vecLength(vector);
+            return [vector[0]/magnitude , vector[1]/magnitude , vector[2]/magnitude ];
+        }
+
+        function dotProduct(vec1, vec2) {
+            return vec1[0]*vec2[0] +  vec1[1]*vec2[1] + vec1[2]*vec2[2];
+        }
+
+        function crossProduct(vec1, vec2){
+            return [vec1[1]*vec2[2]-vec1[2]*vec2[1], -vec1[0]*vec2[2]+vec1[2]*vec2[0], vec1[0]*vec2[1]-vec1[1]*vec2[0]];
+        }
+
+
+        function lightingFactor(triangle,light,centerOfBox){
+            //compute normal vector of this triangle, in world coordinate
+            var centerOfTriangle = [(triangle[0][0]+triangle[1][0]+triangle[2][0])/3, (triangle[0][1]+triangle[1][1]+triangle[2][1])/3, (triangle[0][2]+triangle[1][2]+triangle[2][2])/3];
+            var v1 = m4.transformPoint(triangle[6],triangle[0]);
+            var v2 = m4.transformPoint(triangle[6],triangle[1]);
+            var v3 = m4.transformPoint(triangle[6],triangle[2]);
+            var centerOfTriangleWorld = m4.transformPoint(triangle[6],centerOfTriangle);
+            var vec1 = vectorFromPoints(v1,v2);
+            var vec2 = vectorFromPoints(v1,v3);
+            var vec3 = vectorFromPoints(v2,v3);
+            var unitNormal = getUnitVector(crossProduct(vec1,vec2));
+
+
+            // if the triangle is facing away from the light source, very dim light.
+            // otherwise, shading depending on the angle between normal vector of triangle and direction to the light source
+            var testVector1 = vectorFromPoints(centerOfBox[triangle[5]],light);
+            var testVector2 = vectorFromPoints(centerOfBox[triangle[5]],centerOfTriangleWorld);
+
+            if( dotProduct(getUnitVector(testVector1), getUnitVector(testVector2)) > 0){
+                return Math.abs(dotProduct(unitNormal, getUnitVector(testVector1)));
+            } else {
+                return 0.2;
+            }
+         }
+
+        function colorTriangles(triangles,lightSrc,center){
+            for(var j = 0 ; j < triangles.length ; j++) {
+                var shading = Math.floor(lightingFactor(triangles[j],lightSrc,center)*255);
+                switch (triangles[j][4]) {
+                    case 1 :
+                        triangles[j][3] = "rgb(" + shading + ",0,0)";
+                        break;
+                    case 2 :
+                        triangles[j][3] = "rgb(" + shading + "," + shading + "," + shading + ")";
+                        break;
+                    case 3 :
+                        triangles[j][3] = "rgb(0," + shading + ",0)";
+                        break;
+                    case 4 :
+                        triangles[j][3] = "rgb(" + shading + "," + shading + "," + shading + ")";
+                        break;
+                    case 5 :
+                        triangles[j][3] = "rgb(0,0," + shading + ")";
+                        break;
+                    case 6 :
+                        triangles[j][3] = "rgb(" + shading + "," + shading + "," + shading + ")";
+                        break;
+                }
+            }
+        }
+
+        //sorting triangles from nearest to farthest then drawing them in the scene in reverse order (farthest triangle first)
+
+        function setTransformations(triangles,arrayModel) {
+            //store information of model transform into each triangle
+            for (var k = 0; k < triangles.length; k++) {
+                triangles[k][6] = arrayModel[triangles[k][5]];
+            }
+        }
+
+        function findAvgZCamera(triangle,Tx,Tcamera){
+            var v1camera = m4.transformPoint(m4.multiply(Tx,Tcamera),triangle[0]);
+            var v2camera = m4.transformPoint(m4.multiply(Tx,Tcamera),triangle[1]);
+            var v3camera = m4.transformPoint(m4.multiply(Tx,Tcamera),triangle[2]);
+            return -(v1camera[2]+v2camera[2]+v3camera[2])/3;
+        }
+
+        //TODO : better sorting algorithm?
+        function sortTriangles(triangles,matrix){ //sort triangles, the nearest to the farthest from camera
+            var passes = triangles.length-1;
+            var swaps = true;
+            for(var p = 0; p < passes && swaps; p++){
+                swaps = false;
+                for(var r = passes; r > p; r--){
+                    if(findAvgZCamera(triangles[r],triangles[r][6],matrix) < findAvgZCamera(triangles[r-1],triangles[r-1][6],matrix)){
+                        var temp;
+                        temp = triangles[r-1];
+                        triangles[r-1] = triangles[r];
+                        triangles[r] = temp;
+                        swaps = true;
+                    }
+                }
+            }
+        }
+
+        function drawScene(triangles,Tcpv){
+            //cover surface with triangles. Transformation matrix is Tmcpv
+            for(var j = triangles.length-1 ; j >= 0 ; j--) {
+                drawTriangle(triangles[j],m4.multiply(triangles[j][6],Tcpv));
+            }
+        }
+
+        function draw(){
+            window.requestAnimationFrame(draw);
+            canvas.width = canvas.width;
+            var viewAngle = slider1.value*0.1*Math.PI;
+            var eye = [200*Math.cos(viewAngle),200*Math.sin(viewAngle),slider3.value];
+            var target = [0,0,0];
+            var up = [0,0,1];
+            var lightSrc = [slider4.value*0.8+100,slider4.value*0.8,150];
+            var axis1 = [0,0,1];
+            var axis2 = [0,1,1];
+
+            rotation = rotation + slider2.value*0.001;
+
+            var arrayModel = [];
+            arrayModel.push(m4.multiply(m4.translation([0,-10,0]),m4.axisRotation(axis1, rotation)));
+            arrayModel.push(m4.translation([90,-30,0]));
+            arrayModel.push(m4.multiply(m4.axisRotation(axis2, rotation*0.05*Math.PI),m4.translation([-150,-25,0])));
+            arrayModel.push(m4.translation([-200,-15,120]));
+
+            var Tcamera = m4.inverse(m4.lookAt(eye, target, up));
+            var Tprojection = m4.perspective((Math.PI/3)+slider5.value*0.01*(Math.PI/6),1,1,500);
+            var Tviewport = m4.multiply(m4.scaling([100,-100,100]), m4.translation([200,300,0]));
+
+            var Tcpv = m4.multiply(m4.multiply(Tcamera,Tprojection), Tviewport);
+
+            // light source, with little marker
+            context.strokeStyle = 'yellow';
+            moveToTx(lightSrc[0]-10,lightSrc[1],lightSrc[2],Tcpv);lineToTx(lightSrc[0]+10,lightSrc[1],lightSrc[2],Tcpv);context.stroke();
+            moveToTx(lightSrc[0],lightSrc[1]-10,lightSrc[2],Tcpv);lineToTx(lightSrc[0],lightSrc[1]+10,lightSrc[2],Tcpv);context.stroke();
+            moveToTx(lightSrc[0],lightSrc[1],lightSrc[2]-10,Tcpv);lineToTx(lightSrc[0],lightSrc[1],lightSrc[2]+10,Tcpv);context.stroke();
+            moveToTx(0,0,0,Tcpv);lineToTx(lightSrc[0],lightSrc[1],lightSrc[2],Tcpv);context.stroke();
+
+            drawAxes(Tcpv,"gold");
+
+            //draw boxes, model to viewport
+            for(var h = 0; h < boxes.length; h++) {
+                drawBox(boxes[h], m4.multiply(arrayModel[h], Tcpv));
+                centerOfBoxWorld.push(findCenterOfBox(boxes[h], arrayModel[h])); //coordinates of center of the box in the world coordinate
+            }
+
+            //sort triangles, shading colors, then draw them.
+            setTransformations(triangles,arrayModel); //assign correct mc transforms to each triangle
+            colorTriangles(triangles,lightSrc,centerOfBoxWorld); //shading of the triangles depending on light source
+            sortTriangles(triangles,Tcamera); //sort based on the distance from camera
+            drawScene(triangles,Tcpv);
+
+        }
+
+        slider1.addEventListener("input",draw);
+        slider2.addEventListener("input",draw);
+        slider3.addEventListener("input",draw);
+        slider4.addEventListener("input",draw);
+        initGeometry();
+        //draw();
+        window.requestAnimationFrame(draw);
+    }
+    window.onload = setup;
+
+</script>
+
+</body>
+
+</html>
