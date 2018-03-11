@@ -15,6 +15,6 @@ Use Painter's Algorithm to solve visibility - determine which objects(solid) wil
 <br/>
 *Painter's Algorithm? Every time we change the view point, sort items accordingly before drawing them in the scene.*<br/>
 <br/>
-<img src="Project4.gif" width = "300" height = "500"><br/>
+<img src="Project4.gif" width = "603" height = "555"><br/>
 <br/>
 
