@@ -12,8 +12,8 @@ Using twgl library to create animated 3D objects & Graphics Pipeline experiments
 **Project4. Graphics Pipeline & Painter's Algorithm**<br/>
 
 Use Painter's Algorithm to solve visibility - determine which objects(solid) will be in front. <br/>
-Painter's Algorithm? <br/>
-  - every time we change the view point, sort items accordingly before drawing them in the scene.<br/>
+<br/>
+*Painter's Algorithm? Every time we change the view point, sort items accordingly before drawing them in the scene.*<br/>
 <br/>
 <img src="Project4.gif" width = "300" height = "500"><br/>
 <br/>
