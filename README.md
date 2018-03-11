@@ -9,9 +9,10 @@ Using twgl library to create animated 3D objects & Graphics Pipeline experiments
 *issue : Visibility. Because butterfly will always be drawn at the very last, it's on the top of everything else. How can we make butterfly to stay on top of the flower even if we change the view angle?*<br/>
 <br/>
 
-**Project4. Graphics Pipeline & Painter's Algorithm**<br/>
+**Project4. Graphics Pipeline & Painter's Algorithm, intro to Shading**<br/>
 
 Use Painter's Algorithm to solve visibility - determine which objects(solid) will be in front. <br/>
+Also, experiment with shading by calculating angle between light source and normal vector of the surface. 
 <br/>
 *Painter's Algorithm? Every time we change the view point, sort items accordingly before drawing them in the scene.*<br/>
 <br/>
