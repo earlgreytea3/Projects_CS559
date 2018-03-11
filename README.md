@@ -18,6 +18,6 @@ Experimenting with 'shading' by calculating the angle between light source and n
 <br/>
 <img src="Project4.gif" width = "603" height = "555"><br/>
 <br/>
-*issue : shading effect has some errors.* <br/>
+*issue : some errors in shading effect.* <br/>
 <br/>
 
