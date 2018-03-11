@@ -2,7 +2,7 @@
 
 **Project3. 3D Flower**<br/>
 
-Using twgl library to create animated 3D objects & Graphics Pipeline experiments with viewing angle and zooming<br/>
+Use twgl library to create animated 3D objects & Graphics Pipeline experiments with viewing angle and zooming<br/>
 <br/>
 <img src="3DFlower.gif" width = "300" height = "500"><br/>
 <br/>
@@ -18,6 +18,6 @@ Experimenting with 'shading' by calculating the angle between light source and n
 <br/>
 <img src="Project4.gif" width = "603" height = "555"><br/>
 <br/>
-*issue : shading effect has some errors. <br/>
+*issue : shading effect has some errors.* <br/>
 <br/>
 
