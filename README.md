@@ -12,10 +12,12 @@ Using twgl library to create animated 3D objects & Graphics Pipeline experiments
 **Project4. Graphics Pipeline & Painter's Algorithm, intro to Shading**<br/>
 
 Use Painter's Algorithm to solve visibility - determine which objects(solid) will be in front. <br/>
-Also, experiment with shading by calculating angle between light source and normal vector of the surface. 
+Experimenting with 'shading' by calculating the angle between light source and normal vector of the surface. <br/>
 <br/>
 *Painter's Algorithm? Every time we change the view point, sort items accordingly before drawing them in the scene.*<br/>
 <br/>
 <img src="Project4.gif" width = "603" height = "555"><br/>
+<br/>
+*issue : shading effect has some errors. <br/>
 <br/>
 
