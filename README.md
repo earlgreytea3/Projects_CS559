@@ -21,3 +21,8 @@ Experimenting with 'shading' by calculating the angle between light source and n
 *issue : some errors in the shading effect.* <br/>
 <br/>
 
+**Project6. WebGL API**<br/>
+
+<img src="Project6.gif" width = "603" height = "555"><br/>
+
+
