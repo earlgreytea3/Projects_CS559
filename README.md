@@ -23,6 +23,6 @@ Experimenting with 'shading' by calculating the angle between light source and n
 
 **Project6. WebGL API**<br/>
 
-<img src="Project6.gif" width = "603" height = "555"><br/>
+<img src="Project6.gif" width = "300" height = "500"><br/>
 
 
